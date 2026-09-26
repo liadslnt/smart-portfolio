@@ -1,0 +1,51 @@
+important : ajouter le spread?
+
+
+Il manque : 
+- couts
+- analyse
+- sotkcer historique du leverage dans vol targeting
+- decider si le cap a 2.0 sature ou pas, laugmenter serait irrealiste mais on comprendrait peut etre mieux ce quil se passe. 
+- plus tard dans le projet je peux ajouter la valeur du cash avec inflation, cout pret etc?
+- spread
+- turnover : chaque fois que je change modifie portefeuille ca coute argent
+
+
+
+
+
+
+
+
+leverage : on voit que p ex tecj est volalit, passe bcp a 50% dexposition etc
+
+
+Attention : le /2 fonctionne naturellement quand le portefeuille est globalement fully invested et que les achats sont financés par des ventes. Dans ton cas avec cash/leverage, on pourra vérifier précisément si cette définition reste celle qu'on veut utiliser pour les transaction costs.
+
+
+pour le reusme sur les cost quon a pris 0.001 etc faut dire ca depent du nombre daction diff etc
+
+
+breakeven?
+
+
+
+
+eux risques différents.
+
+Le Sharpe = rendement excédentaire / volatilité. Il ne pénalise qu'un seul type de risque : la variabilité des rendements (σ). Il ne voit pas du tout :
+
+la concentration (1 actif vs 9) — tant que cet actif délivre du rendement par unité de vol, le ratio est bon
+le risque de ruine / max drawdown — Tech a −49 % de DD, le pire du tableau avec SPY, et le Sharpe s'en fiche
+le risque idiosyncratique — que tout repose sur le secteur tech, un seul choc sectoriel possible
+
+Tech a σ = 22.4 %, effectivement le plus volatil. Mais son rendement excédentaire (~17.5 %) est encore plus élevé proportionnellement. Le ratio des deux (0.73) est ce qui compte pour le Sharpe, pas les niveaux absolus. QQQ sur 2008–26 a simplement été très bien rémunéré pour sa volatilité — c'est une décennie et demie de domination tech (bull market + 0 % de taux + méga-caps). Le Sharpe dit « bon rendement par unité de vol », il ne dit jamais « portefeuille prudent ».
+
+Le point crucial que tu touches du doigt : ta vraie intuition, c'est que Tech est fragile, pas volatil. Fragile = « si le régime change, ça s'effondre et je n'ai aucune diversification pour amortir ». Ça, aucune de tes métriques actuelles ne le capture pleinement. Le Sharpe mesure la variabilité réalisée sur une période où la tech a gagné. Il ne mesure pas la robustesse à un futur différent.
+
+Et c'est précisément pour ça que les deux prochaines étapes existent :
+
+Le bootstrap va montrer que le Sharpe de Tech, tout haut qu'il soit, a un IC énorme (SE ≈ 0.23) — donc « 0.73 » n'est pas fiable, il aurait pu être 0.4 dans une autre réalisation.
+La robustesse / sous-périodes va exposer la fragilité directement : regarde Tech sur 2008 isolé, ou dans une sous-période sans le boom tech. Son Sharpe va s'effondrer, alors que Carver/60-40 resteront stables. Là tu vois ce que le Sharpe global cache.
+
+C'est même un excellent narratif pour ton README : « Tech domine en Sharpe (0.73) mais c'est un mirage de concentration — un seul actif, un seul régime favorable, le pire drawdown du panel ; le bootstrap et l'analyse par sous-période montrent que ce Sharpe n'est ni stable ni robuste. »
