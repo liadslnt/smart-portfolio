@@ -79,14 +79,13 @@ def simulate_holding_period(
 
     rf_returns = align_risk_free(risk_free_returns, future_ret.index)
 
-    # Annual funding spread -> daily funding spread
+    # Convert annual funding spread to a daily rate
     daily_funding_spread = (1 + funding_spread) ** (1 / 252) - 1
 
     for date, asset_returns in future_ret.iterrows():
-
         rf = 0.0 if rf_returns is None else rf_returns.loc[date]
 
-        # Positive = cash, negative = borrowing
+        # Positive cash earns the risk-free rate; negative cash represents borrowing
         cash_weight = 1.0 - current_weights.sum()
 
         if cash_weight >= 0:
@@ -102,7 +101,7 @@ def simulate_holding_period(
 
         total_value = risky_values.sum() + cash_value
 
-        # Drifted risky-asset weights
+        # Let risky-asset weights drift during the holding period
         current_weights = risky_values / total_value
 
     return pd.Series(period_returns, index=future_ret.index), current_weights
@@ -147,8 +146,6 @@ def backtest(
     previous_weights = None
 
     for t in range(window, len(returns), step):
-
-        # Historical estimation window
         curr_ret = returns.iloc[t - window:t]
 
         arit_mean = metrics.annualize_returns_aritm(curr_ret)
@@ -170,7 +167,6 @@ def backtest(
             annual_rf=annual_rf
         )
 
-        # Volatility targeting
         if vol_target is not None:
             leverage = compute_leverage(weights, cov, vol_target, max_leverage)
             weights = weights * leverage
@@ -180,7 +176,7 @@ def backtest(
         leverage_history.append(leverage)
         rebalance_dates.append(returns.index[t])
 
-        # One-way turnover
+        # One-way turnover convention
         if previous_weights is None:
             turnover = 0.0
         else:
@@ -188,11 +184,10 @@ def backtest(
 
         turnover_history.append(turnover)
 
-        # ×2 because turnover is defined as one-way turnover
+        # Multiply by 2 to recover total traded notional from one-way turnover
         transaction_cost_amount = turnover * transaction_cost * 2
         transaction_cost_history.append(transaction_cost_amount)
 
-        # Future out-of-sample period
         end = min(t + step, len(returns))
         future_ret = returns.iloc[t:end]
 
@@ -208,7 +203,7 @@ def backtest(
             funding_spread
         )
 
-        # Apply transaction cost at rebalance
+        # Deduct transaction cost once at the rebalance
         period_portfolio_returns.iloc[0] = (
             (1 + period_portfolio_returns.iloc[0])
             * (1 - transaction_cost_amount)
@@ -216,16 +211,12 @@ def backtest(
         )
 
         portfolio_returns.append(period_portfolio_returns)
-
         previous_weights = end_weights
 
-        # Store target weights
         weights.name = returns.index[t]
         weight_history.append(weights)
 
-    # Combine all out-of-sample periods
     portfolio_returns = pd.concat(portfolio_returns)
-
     weight_history = pd.DataFrame(weight_history)
 
     leverage_history = pd.Series(
