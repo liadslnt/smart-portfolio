@@ -134,7 +134,8 @@ def backtest(
     max_leverage=2.0,
     risk_free_returns=None,
     transaction_cost=0.001,
-    funding_spread=0.01
+    funding_spread=0.01, 
+    vol_window=None
 ):
     portfolio_returns = []
     weight_history = []
@@ -168,7 +169,19 @@ def backtest(
         )
 
         if vol_target is not None:
-            leverage = compute_leverage(weights, cov, vol_target, max_leverage)
+            if vol_window is None:
+                leverage_cov = cov
+            else:
+                vol_ret = returns.iloc[t - vol_window:t]
+                leverage_cov = metrics.cov_matrix(vol_ret)
+        
+            leverage = compute_leverage(
+                weights,
+                leverage_cov,
+                vol_target,
+                max_leverage
+            )
+        
             weights = weights * leverage
         else:
             leverage = 1.0
