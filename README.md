@@ -13,6 +13,18 @@ The objective is not only to compare historical performance, but also to underst
 - **Funding costs strongly affect leveraged low-volatility strategies.** Carver's Sharpe falls from 0.521 with a 1x leverage cap to 0.362 at 2x, with funding costs explaining a large part of the decline.
 - **The volatility estimator can change the effect of volatility targeting.** SPY's Sharpe rises from 0.574 raw to 0.619 with the 60-day estimator, but falls to 0.507 with the 756-day estimator.
 
+## Results overview
+
+### Volatility-targeted portfolio growth
+
+![Volatility-targeted portfolio growth](results/targeted_wealth.png)
+
+### Drawdowns
+
+![Volatility-targeted drawdowns](results/targeted_drawdown.png)
+
+More figures and detailed results are available in the **[results summary notebook](notebooks/04_results_summary.ipynb)**.
+
 ## Strategies
 
 The project compares six allocation methods:
