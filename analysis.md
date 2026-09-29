@@ -26,7 +26,7 @@ After volatility targeting, the risk profiles become much more comparable across
 
 ## 3. Risk-free rate, cash and funding
 
-The risk-free rate plays two different roles in the project. First, Sharpe ratios are calculated from excess returns, so the relevant return is the portfolio return minus the risk-free return. Second, the risk-free rate is used directly inside the backtest when volatility targeting changes total exposure.
+The risk-free rate is based on the FRED DGS3MO 3-Month U.S. Treasury series. The annual rate is converted to a daily return and aligned with the ETF trading dates. It plays two different roles in the project. First, Sharpe ratios are calculated from excess returns, so the relevant return is the portfolio return minus the risk-free return. Second, the risk-free rate is used directly inside the backtest when volatility targeting changes total exposure.
 
 When leverage is below 1x, the uninvested part of the portfolio remains in cash and earns the daily risk-free rate. When leverage is above 1x, the portfolio has to borrow. In the base case, borrowed capital costs the risk-free rate plus a 1% annual funding spread.
 This matters mainly for the low-volatility strategies. Carver and Hierarchical Inverse Volatility spend most of the sample close to 2x leverage, so their targeted performance is exposed to funding costs almost continuously. Tech is the opposite case: with average leverage of only 0.59x, it generally holds cash rather than borrowing.
